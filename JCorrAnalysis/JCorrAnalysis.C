@@ -60,7 +60,7 @@ int JCorrAnalysis(TString inputfile="input_trees.txt", TString outputfile="ouput
 	//------------------------------------------------------------------------------
 	TList *phistosOut = new TList();
 	phistosOut->SetOwner(kFALSE);
-	const char *pcustomBinning = "p_t_assoc: 1.0, 2.0, 3.0, 4.0\np_t_leading_course: 1.0, 2.0, 3.0, 4.0\neta: -1.2, -1.1, -1.0, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2\nmultiplicity:-0.5, 2.750, 5.250, 7.750, 12.750, 17.750, 22.750, 27.750, 32.750, 37.750, 42.750, 47.750, 52.750, 57.750, 62.750, 67.750, 72.750, 77.750, 82.750, 87.750, 92.750, 97.750, 250.000\n";
+	const char *pcustomBinning = "p_t_assoc: 1.0, 2.0, 3.0, 4.0, 8.0\np_t_leading_course: 1.0, 2.0, 3.0, 4.0, 8.0\neta: -1.2, -1.1, -1.0, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2\nmultiplicity:-0.5, 2.750, 5.250, 7.750, 12.750, 17.750, 22.750, 27.750, 32.750, 37.750, 42.750, 47.750, 52.750, 57.750, 62.750, 67.750, 72.750, 77.750, 82.750, 87.750, 92.750, 97.750, 250.000\n";
 	AliUEHistograms *pueSame = new AliUEHistograms("AliUEHistogramsSame","5RD",pcustomBinning);
 	AliUEHistograms *pueMixed = new AliUEHistograms("AliUEHistogramsMixed","5RD",pcustomBinning);
 
@@ -85,7 +85,7 @@ int JCorrAnalysis(TString inputfile="input_trees.txt", TString outputfile="ouput
 		pue->SetRejectResonanceDaughters(-1);
 		//pue->SetTrackEtaCut(1.1);
 		//pue->SetTrackEtaCut(0.9);
-		pue->SetTrackEtaCut(4.0);
+		pue->SetTrackEtaCut(1.0);
 		pue->SetWeightPerEvent(kFALSE);
 		pue->SetPtOrder(kTRUE);
 		phistosOut->Add(pue);
