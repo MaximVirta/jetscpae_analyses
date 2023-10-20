@@ -9,6 +9,7 @@
 #include "HepMC3/GenParticle.h"
 
 using namespace std;
+
 TTree *jTree;
 TTree *hepTree;
 
@@ -23,7 +24,7 @@ void ClearEvent();
 void createTree(Bool_t useJTree=kTRUE);
 void AddEvent(Int_t seed, Int_t iEvent, Int_t Ntrk, Int_t ic,Bool_t useJTree=kTRUE);
 void AddTrack(Int_t i, Double_t px, Double_t py, Double_t pz, Double_t E, Int_t pid, Char_t crg);
-void HEPMCtoJTree(const TString outputfile = "test.root", const TString inputfile = "output/output_0_final_state_hadrons.dat");
+void HEPMCtoJTree(const TString outputfile, const TString inputfile);
 void readEvent(int iEvent);
 
 
@@ -72,7 +73,7 @@ void readEvent(int iEvent) {
 		HepMC3::GenParticle *p = sp.get();
 		HepMC3::FourVector momentum = p->momentum();
 
-		if (TMath::Abs(p->pid())< 100 || p->status()!=1) continue;
+		if (p->status()!=1) continue; // Read only final state particles.
 
 		AddTrack(j, momentum.px(), momentum.py(), momentum.pz(), momentum.e(), p->pid(), -1);
 		j++;
