@@ -7,6 +7,7 @@
 #include "HepMC3/GenEvent.h"
 #include "HepMC3/Data/GenEventData.h"
 #include "HepMC3/GenParticle.h"
+#include <pdgcode.h>
 
 using namespace std;
 
@@ -52,9 +53,13 @@ void HEPMCtoJTree(const TString inputfile, const TString outputfile) {
 	hepTree->SetBranchAddress("hepmc3_event", &evtData);
 
 	int nevents = hepTree->GetEntries();
-	
+
+	int tt = (int)(0.1*nevents);
+
 	for (int ievt = 0; ievt < nevents; ++ievt) {
+		if (ievt>0 && ievt % tt == 0) printf("%.0f %% completed\n", 100*(float)ievt/(float)nevents);
 		readEvent(ievt);
+		ClearEvent();
 	}
 	printf("All done! Nr. events read: %d\n", nevents);
 
@@ -69,16 +74,28 @@ void readEvent(int iEvent) {
 	hepTree->GetEntry(iEvent);
 	evt.read_data(*evtData);
 	uint j = 0;
+	Bool_t acceptEventA = kFALSE;
+	Bool_t acceptEventC = kFALSE;
 	for (std::shared_ptr<HepMC3::GenParticle> sp: evt.particles()) {
 		HepMC3::GenParticle *p = sp.get();
 		HepMC3::FourVector momentum = p->momentum();
-
-		if (p->status()!=1) continue; // Read only final state particles.
-
+		// Include only final state particles
+		if (p->status()!=1 || TMath::Abs(p->pid())<50) continue;
+		// Include only hadrons
+               	smash::PdgCode pdg = smash::PdgCode::from_decimal(p->pid());
+		if (!pdg.is_hadron()) continue; // Read only final state hadrons.
+		//if (iEvent==1) printf("id: %d, stat: %d, pid: %d, e: %.3f, px: %.3f, py: %.3f, pz: %.3f\n", j, p->status(), p->pid(), momentum.e(), momentum.px(), momentum.py(), momentum.pz());
 		AddTrack(j, momentum.px(), momentum.py(), momentum.pz(), momentum.e(), p->pid(), -1);
+		if (momentum.eta() > 2.8 && momentum.eta() < 5.1 && !acceptEventA) acceptEventA=kTRUE;
+		if (momentum.eta() > -3.7 && momentum.eta() <-1.7 && !acceptEventC) acceptEventC=kTRUE;
 		j++;
 	}
-	jTree->Fill();
+	// if (iEvent<100) printf("%d\n", j);
+	if (acceptEventA && acceptEventC) {
+		jTree->Fill();
+	} else {
+		printf("Event number %d excluded from analysis.\n", iEvent);
+	}
 }
 
 void createTree(Bool_t useJTree){

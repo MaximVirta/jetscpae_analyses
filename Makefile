@@ -2,11 +2,11 @@ PROGRAM = HEPMCtoJTree
 
 VERSION = JTKT
 CXX = g++
-CXXFLAGS = -g -O3 -Wall -Wno-deprecated 
+CXXFLAGS = -g -O3 -Wall -Wno-deprecated -I/projappl/project_2003112/hydro/JETSCAPE/external_packages/smash/smash_code/src/include/smash -D$(VERSION)
 LD = g++
 
 CXXFLAGS += $(shell HepMC3-config --cflags)
-LDFLAGS = $(shell HepMC3-config --libs)
+LDFLAGS = $(shell HepMC3-config --libs) /projappl/project_2003112/hydro/JETSCAPE/external_packages/smash/smash_code/build/src/CMakeFiles/objlib.dir/pdgcode.cc.o
 SOFLAGS = -shared
 
 CXXFLAGS += $(shell root-config --cflags) -fPIC

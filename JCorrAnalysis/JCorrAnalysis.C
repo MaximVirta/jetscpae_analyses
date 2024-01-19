@@ -44,10 +44,10 @@ int JCorrAnalysis(TString inputfile="input_trees.txt", TString outputfile="ouput
 	TClonesArray *inputList = NULL;
 	JTreeDataManager* dmg = new JTreeDataManager();
 
-	// TH1D *histo_phi = new TH1D("hPt", "pT spectra", nBins-1, ptt);
-	// histo_phi->Sumw2();
-	// TH1D *histo_eta = new TH1D("heta", "eta", 500 , -10, 10);
-	// histo_eta->Sumw2();
+	TH1D *histo_phi = new TH1D("hPt", "pT spectra", nBins-1, ptt);
+	histo_phi->Sumw2();
+	TH1D *histo_eta = new TH1D("heta", "eta", 500 , -10, 10);
+	histo_eta->Sumw2();
 
 	// JHistos *histos = new JHistos();
 	// histos->CreateQAHistos();
@@ -136,8 +136,8 @@ int JCorrAnalysis(TString inputfile="input_trees.txt", TString outputfile="ouput
 		// calculate multiplicity
 	    for(uint j = 0, k = 0, l = noAllTracks; j < l; ++j){
 			JBaseTrack *trk = (JBaseTrack*)inputList->At(j);
-			// histo_phi->Fill(trk->Pt());
-			// histo_eta->Fill(trk->Eta());
+			histo_phi->Fill(trk->Pt());
+			histo_eta->Fill(trk->Eta());
 			//include pT > 1.0 GeV particles only in the correlations
 			if(trk->Pt() > 1.0){ //
 				double phi = trk->Phi() < 0.0?2.0*TMath::Pi()+trk->Phi():trk->Phi(); //Add 2pi if negative
@@ -175,6 +175,8 @@ int JCorrAnalysis(TString inputfile="input_trees.txt", TString outputfile="ouput
 	}
 	
 	TFile *pfo = new TFile(outputfile.Data(),"recreate");
+	histo_phi->Write();
+	histo_eta->Write();
 	TDirectory *pmcDir = pfo->mkdir("PWG4_PhiCorrelations");
 	pfo->cd("PWG4_PhiCorrelations");
 
