@@ -53,7 +53,7 @@ void HEPMCtoJTree(const TString inputfile, const TString outputfile) {
 	hepTree->SetBranchAddress("hepmc3_event", &evtData);
 
 	int nevents = hepTree->GetEntries();
-
+	printf("Nr. of events: %d", nevents);
 	int tt = (int)(0.1*nevents);
 
 	for (int ievt = 0; ievt < nevents; ++ievt) {
@@ -74,27 +74,39 @@ void readEvent(int iEvent) {
 	hepTree->GetEntry(iEvent);
 	evt.read_data(*evtData);
 	uint j = 0;
+	Bool_t bUseAC=kFALSE;
 	Bool_t acceptEventA = kFALSE;
 	Bool_t acceptEventC = kFALSE;
+	int stat = -1;
 	for (std::shared_ptr<HepMC3::GenParticle> sp: evt.particles()) {
 		HepMC3::GenParticle *p = sp.get();
 		HepMC3::FourVector momentum = p->momentum();
+		if (stat !=p->status() && iEvent==1) {
+			stat = p->status();
+			printf("status code: %d\n", stat);
+		}
+		if (iEvent==1 && p->pid()==22) printf("id: %d, stat: %d, pid: %d, e: %.3f, px: %.3f, py: %.3f, pz: %.3f\n", j, p->status(), p->pid(), momentum.e(), momentum.px(), momentum.py(), momentum.pz());
+		if (TMath::Abs(p->pid())==22 && p->status()==11) printf("pid: %d, pT: \n", p->pid());
 		// Include only final state particles
-		if (p->status()!=1 || TMath::Abs(p->pid())<50) continue;
+		if (p->status()!=27 || (TMath::Abs(p->pid())<50 && p->pid()!=22)) continue;
 		// Include only hadrons
                	smash::PdgCode pdg = smash::PdgCode::from_decimal(p->pid());
-		if (!pdg.is_hadron()) continue; // Read only final state hadrons.
-		//if (iEvent==1) printf("id: %d, stat: %d, pid: %d, e: %.3f, px: %.3f, py: %.3f, pz: %.3f\n", j, p->status(), p->pid(), momentum.e(), momentum.px(), momentum.py(), momentum.pz());
+		if (!pdg.is_hadron() && p->pid()!=-22) continue; // Read only final state hadrons.
+		if (iEvent==1 && p->pid()==22) printf("id: %d, stat: %d, pid: %d, e: %.3f, px: %.3f, py: %.3f, pz: %.3f\n", j, p->status(), p->pid(), momentum.e(), momentum.px(), momentum.py(), momentum.pz());
 		AddTrack(j, momentum.px(), momentum.py(), momentum.pz(), momentum.e(), p->pid(), -1);
 		if (momentum.eta() > 2.8 && momentum.eta() < 5.1 && !acceptEventA) acceptEventA=kTRUE;
 		if (momentum.eta() > -3.7 && momentum.eta() <-1.7 && !acceptEventC) acceptEventC=kTRUE;
 		j++;
 	}
 	// if (iEvent<100) printf("%d\n", j);
-	if (acceptEventA && acceptEventC) {
-		jTree->Fill();
+	if (bUseAC) {
+		if (acceptEventA && acceptEventC) {
+			jTree->Fill();
+		} else {
+			printf("Event number %d excluded from analysis.\n", iEvent);
+		}
 	} else {
-		printf("Event number %d excluded from analysis.\n", iEvent);
+		jTree->Fill();
 	}
 }
 
