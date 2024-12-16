@@ -1,0 +1,28 @@
+! Based on example main03.cmnd with added monash tune.
+! This file contains commands to be read in for a Pythia8 run. 
+! Lines not beginning with a letter or digit are comments.
+
+! 1) Settings used in the main program.
+Main:numberOfEvents = 10000000     ! number of events to generate
+
+! 2) Beam parameter settings. Values below agree with default ones.
+Beams:idA = 2212                   ! first beam, p = 2212, pbar = -2212
+Beams:idB = 2212                   ! second beam, p = 2212, pbar = -2212
+Beams:eCM = 13600.                  ! CM energy of collision
+
+! 3) Settings for the hard-process generation.
+HardQCD:all = on                   ! switch on all QCD jet + jet processes
+PromptPhoton:all = off              ! swich on gamma + jet and gamma + gamma 
+
+PhaseSpace:pTHatMin = 0.0          ! minimal pT scale in process 
+PhaseSpace:pTHatMax = -1.0          ! maximal pT scale in process 
+
+! 4) Settings for the event generation process in the Pythia8 library.
+PartonLevel:MPI = on               ! no multiple interactions
+PartonLevel:ISR = on               ! no initial-state radiation 
+PartonLevel:FSR = on               ! no final-state radiation
+HadronLevel:Hadronize = on         ! no hadronization
+
+!HadronLevel:Decay = off    ! Don't do resonance decays
+
+Tune:pp = 14 !Default monash 13 tuning setting
